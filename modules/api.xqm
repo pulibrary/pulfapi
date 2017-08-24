@@ -1,6 +1,7 @@
-xquery version "3.1";
+xquery version "3.0";
 
-module namespace api="http://library.princeton.edu/apps/pulfa/api";
+module namespace ar="http://exist-db.org/apps/myapp/mymodule";
+
 
 import module namespace request = "http://exist-db.org/xquery/request";
 import module namespace response = "http://exist-db.org/xquery/response";
@@ -12,10 +13,10 @@ declare namespace http = "http://expath.org/ns/http-client";
 
 declare
  %rest:GET
- %rest:path("/pulfa/api")
+ %rest:path("/archiverat/ping")
  %output:method("json")
  %rest:produces("application/json")
-function api:ping()
+function ar:ping()
 {
     let $response := <h1>hello, world</h1>
     return
