@@ -1,2 +1,2 @@
 # pulfapi
-a reimplementation of the finding aids api
+Exploring reimplementing the PULFA api develped by Jon Stroop, this time in eXist 3 using RESTXQ.
