@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <meta xmlns="http://exist-db.org/xquery/repo">
-    <description>Princeton University Finding Aids</description>
-    <author>cew</author>
+    <description>Archive Rat</description>
     <author>cew</author>
     <website/>
     <status>alpha</status>
     <license>GNU-LGPL</license>
     <copyright>true</copyright>
     <type>application</type>
-    <target>pulfa</target>
+    <target>archiverat</target>
     <prepare>pre-install.xql</prepare>
     <finish/>
-    <permissions user="pulfa" group="pulfa" mode="rw-rw-r--"/>
-
-<deployed>2017-08-23T16:38:30.467-04:00</deployed>
 </meta>
