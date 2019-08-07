@@ -24,6 +24,27 @@ as item()
  </repository>
 };
 
+declare function local:collection-struct($ead as element())
+as item()
+{
+ let $title := normalize-space($ead/ead:eadheader/ead:filedesc/ead:titlestmt/ead:titleproper)
+ let $top-containers := $ead/ead:archdesc/ead:dsc[@type='combined']/ead:c
+ return
+  <collection>
+   <id>{ $ead/ead:eadheader/ead:eadid/text() }</id>
+   <title>{ $title }</title>
+   <containers>
+    {
+     for $c in $top-containers
+     return
+      <container>
+       <id>{ xs:string($c/@id) }</id>
+       <label>{ normalize-space($c/ead:did/ead:unittitle) }</label>
+      </container>
+    }
+   </containers>
+  </collection>
+};
 
 declare function local:ead-struct($ead as element()) as element() 
 {
@@ -151,10 +172,13 @@ declare
 function api:collections1-as-json($callno as xs:string)
 as item()+
 {
- let $response := <collection id="{$callno}"/>
+ let $hit := collection($config:data-root)//ead:ead[ead:eadheader/ead:eadid=$callno]
+ let $status := if (empty($hit)) then 204 else 200
+ let $response := if ($status = 200) then local:collection-struct($hit) else ()
+ 
  return
   (<rest:response>
-     <http:response status="{ if (empty($response)) then 204 else 200 }">
+     <http:response status="{ $status }">
       <http:header name="Content-Type" value="application/json"/>
       <http:header name="Access-Control-Allow-Origin" value="*"/>
     </http:response>
@@ -172,9 +196,12 @@ function api:collections2-as-json($callno as xs:string, $componentid as xs:strin
 as item()+
 {
  let $response := <collection id="{$callno}"><component id="{$componentid}"/></collection>
+ let $hit := collection($config:data-root)//ead:ead[ead:eadheader/ead:eadid=$callno]//*[@id= string-join(($callno,$componentid), '_')]
+ let $status := if (empty($hit)) then 204 else 200
+ let $response := if ($status = 200) then $hit/ead:did/ead:unittitle else ()
  return
   (<rest:response>
-     <http:response status="{ if (empty($response)) then 204 else 200 }">
+     <http:response status="{ $status }">
       <http:header name="Content-Type" value="application/json"/>
       <http:header name="Access-Control-Allow-Origin" value="*"/>
     </http:response>
