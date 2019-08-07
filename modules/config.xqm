@@ -4,7 +4,7 @@ xquery version "3.0";
  : A set of helper functions to access the application context from
  : within a module.
  :)
-module namespace config="http:/library.princeton.edu/apps/archiverat/config";
+module namespace config="http://library.princeton.edu/apps/pulfa/config";
 
 declare namespace templates="http://exist-db.org/xquery/templates";
 
@@ -29,7 +29,9 @@ declare variable $config:app-root :=
         substring-before($modulePath, "/modules")
 ;
 
-declare variable $config:data-root := $config:app-root || "/data";
+declare variable $config:data-root :=   "/db/pulfa-data";
+
+declare variable $config:pulfa-root := "http://localhost:8080";
 
 declare variable $config:repo-descriptor := doc(concat($config:app-root, "/repo.xml"))/repo:meta;
 

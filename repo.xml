@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <meta xmlns="http://exist-db.org/xquery/repo">
-    <description>Archive Rat</description>
-    <author>cew</author>
+    <description>Princeton University Finding Aids</description>
+    <author>cwulfman</author>
     <website/>
     <status>alpha</status>
     <license>GNU-LGPL</license>
     <copyright>true</copyright>
     <type>application</type>
-    <target>archiverat</target>
+    <target>pulfa</target>
     <prepare>pre-install.xql</prepare>
     <finish/>
+<deployed>2019-08-01T16:54:25.37-04:00</deployed>
 </meta>
