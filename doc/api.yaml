@@ -1,0 +1,391 @@
+openapi: 3.0.2
+info:
+  version: '2.0.0'
+  title: 'PULFA API'
+  description: 'An API to Princeton University Library finding aids'
+servers:
+  - url: https://findingaids.princeton.edu
+    description: production server
+    
+  - url: https://findingaids-dev.princeton.edu
+    description: dev server
+    
+  - url: http://127.0.0.1:8080/exist/restxq/pulfa
+    description: local dev
+    
+components:
+  schemas:
+    repository:
+      description: a unit in an archive
+      properties:
+        id:
+          type: string
+          example: cotsen
+        name:
+          type: string
+          example: Cotsen Children's Library
+      
+      
+    collection:
+      description: a holding in a repository
+      properties:
+        unitid:
+          type: string
+          example: C0108
+        unitTitle:
+          type: string
+          example: Sylvia Beach Papers
+      
+      
+    name:
+      description: a name in an EAC
+      properties:
+        id:
+          type: string
+          example: c32219890c6075adeec1875a1d4b0942
+        name:
+          type: string
+          example: Abbott, Charles C. (Charles Conrad)
+          
+    folder:
+      description: digitalfolder METS
+      properties:
+        id:
+          type: string
+          example: AC003/c013
+        label:
+          type: string
+          example: Grounds and Buildings Committee business, 1906-1907
+          
+    component:
+      description: component of a finding aid
+      properties:
+        id:
+          type: string
+          example: C0108_c00999
+        label:
+          type: string
+          example: Abécassis, Guy
+
+    topic:
+      description: a subject heading
+      properties:
+        id:
+          type: string
+          example: t3
+        label:
+          type: string
+          example: American history/20th century
+
+paths:
+  /repositories:
+    get:
+      description: the repositories at Princeton holding collections
+      parameters: 
+        - name: bodyLimit
+          in: query
+          description: the number of repositories returned
+          schema:
+            type: integer
+            minimum: 5
+            maximum: 25
+            example: 10
+      responses:
+        200:
+          description: successful retrieval of repository array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/repository'
+                  
+  /repositories/{repo}:
+    description: a particular repository
+    get:
+      parameters:
+        - name: repo
+          required: true
+          in: path
+          description: a repository id
+          schema:
+            type: string
+            example: mss
+      responses:
+        200:
+          description: a representation of a repository
+          content:
+            application/json:
+                schema:
+                 $ref: '#/components/schemas/repository'
+
+  /collections:
+    description: the collections in the database
+    get:
+      parameters:
+        - name: repo
+          in: query
+          description: filter by repository
+          schema:
+            type: string
+            example: mss
+        - name: start
+          in: query
+          description: index in collection list
+          schema:
+            type: integer
+            minimum: 1
+            example: 11
+        - name: rpp
+          in: query
+          description: results per page to return
+          schema:
+            type: integer
+            minimum: 1
+            example: 10
+
+      responses:
+        200:
+          description: successful retrieval of collections array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/collection'
+    
+
+  /collections/{callno}:
+    description: information about specific collection
+    get:
+      parameters:
+        - in: path
+          name: callno
+          required: true
+          schema:
+            type: string
+            description: the call number of the collection
+      responses:
+        200:
+          description: successful retrieval of a representation of a collection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collection'
+                
+                
+  /collections/{callno}/{componentId}:
+    description: representation of a component of a collection
+    
+    get:
+      parameters:
+        - in: path
+          name: callno
+          required: true
+          schema:
+            type: string
+            description: the call number of the collection
+        - in: path
+          name: componentId
+          required: true
+          schema:
+            type: string
+            description: the id of the component
+      responses:
+        200:
+          description: successful retrieval of a representation of a component
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/component'
+    
+  /names:
+    get:
+      description: authorized names in the database
+      parameters: 
+        - name: bodyLimit
+          in: query
+          description: number of collections returned
+          schema:
+            type: integer
+            minimum: 10
+            maximum: 50
+            example: 15
+            
+        - name: pageLimit
+          in: query
+          description: number of pages returned
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+            example: 
+        - name: callNo
+          in: query
+          description: filtered to this callNo
+          schema:
+            type: string
+            example: C0108
+
+      responses:
+        200:
+          description: successful retrieval of name array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/name'
+
+  /names/{nameid}:
+    description: information about a specific name
+    get:
+      parameters:
+        - in: path
+          name: nameid
+          required: true
+          schema:
+            type: string
+            description: the id of the name
+        - name: role
+          in: query
+          description: filter results to collections in which nameid has a particular role
+          schema:
+            type: string
+            example: subjectOf
+      responses:
+        200:
+          description: successful retrieval of a representation of a name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/name'
+                
+
+
+  /folders:
+    get:
+      description: authorized names in the database
+      parameters: 
+        - name: bodyLimit
+          in: query
+          description: number of collections returned
+          schema:
+            type: integer
+            minimum: 10
+            maximum: 50
+            example: 15
+            
+        - name: pageLimit
+          in: query
+          description: number of pages returned
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+            example: 2
+      responses:
+        200:
+          description: successful retrieval of name array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/folder'
+
+  /folders/{callno}:
+    description: information about the folders in a specific collection
+    get:
+      parameters:
+        - in: path
+          name: callno
+          required: true
+          schema:
+            type: string
+            description: the call number of the collection
+      responses:
+        200:
+          description: successful retrieval of a representation of folders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/folder'
+                  
+  /folders/{callno}/{componentId}:
+    description: representation of a folder of a component of a collection
+    
+    get:
+      parameters:
+        - in: path
+          name: callno
+          required: true
+          schema:
+            type: string
+            description: the call number of the collection
+        - in: path
+          name: componentId
+          required: true
+          schema:
+            type: string
+            description: the id of the component
+      responses:
+        200:
+          description: successful retrieval of a representation of a folder
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folder'
+
+
+ 
+  /topics:
+    get:
+      parameters: 
+        - name: bodyLimit
+          in: query
+          description: number of topics returned
+          schema:
+            type: integer
+            minimum: 10
+            maximum: 50
+            example: 15
+            
+        - name: pageLimit
+          in: query
+          description: number of pages returned
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+            example: 2
+      responses:
+        200:
+          description: successful retrieval of topic array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/topic'
+                  
+
+  /topics/{topicid}:
+    description: information about a specific topic
+    get:
+      parameters:
+        - in: path
+          name: topicid
+          required: true
+          schema:
+            type: string
+            description: the id of the topic
+      responses:
+        200:
+          description: successful retrieval of a representation of a topic
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/topic'
